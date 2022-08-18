@@ -327,6 +327,7 @@ class DetectableTextField extends StatefulWidget {
   const DetectableTextField({
     Key? key,
     required this.detectionRegExp,
+    this.ranges,
     this.decoratedStyle,
     this.onDetectionFinished,
     this.onDetectionTyped,
@@ -429,6 +430,8 @@ class DetectableTextField extends StatefulWidget {
                     paste: true,
                   )),
         super(key: key);
+
+  final List<TextRange>? ranges;
 
   final ValueChanged<String>? onDetectionTyped;
 
@@ -1279,6 +1282,7 @@ class _DetectableTextFieldState extends State<DetectableTextField>
         bucket: bucket,
         child: DetectableEditableText(
           key: editableTextKey,
+          ranges: widget.ranges,
           detectionRegExp: widget.detectionRegExp,
           detectedStyle:
               widget.decoratedStyle ?? style.copyWith(color: Colors.blue),

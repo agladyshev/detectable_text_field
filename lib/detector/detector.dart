@@ -29,7 +29,7 @@ class Detector {
   });
 
   List<Detection> _getSourceDetections(
-      List<RegExpMatch> tags, String copiedText) {
+      List<TextRange> tags, String copiedText) {
     TextRange? previousItem;
     final result = <Detection>[];
     for (var tag in tags) {
@@ -98,7 +98,11 @@ class Detector {
   }
 
   /// Return the list of decorations with tagged and untagged text
-  List<Detection> getDetections(String copiedText) {
+  List<Detection> getDetections(String copiedText, {List<TextRange>? ranges}) {
+    if (ranges == null) {
+      ranges = [];
+    }
+
     /// Text to change emoji into replacement text
     final fullWidthRegExp = RegExp(
         r'(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])');
@@ -121,11 +125,16 @@ class Detector {
     });
 
     final tags = detectionRegExp.allMatches(copiedText).toList();
-    if (tags.isEmpty) {
+
+    tags.forEach((tag) {
+      ranges?.add(TextRange(start: tag.start, end: tag.end));
+    });
+
+    if (ranges.isEmpty) {
       return [];
     }
 
-    final sourceDetections = _getSourceDetections(tags, copiedText);
+    final sourceDetections = _getSourceDetections(ranges, copiedText);
 
     final emojiFilteredResult = _getEmojiFilteredDetections(
         copiedText: copiedText,

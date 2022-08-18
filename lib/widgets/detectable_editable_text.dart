@@ -23,6 +23,7 @@ class DetectableEditableText extends EditableText {
     required Color cursorColor,
     required this.onDetectionTyped,
     required this.onDetectionFinished,
+    this.ranges,
     ValueChanged<String>? onChanged,
     ValueChanged<String>? onSubmitted,
     int? maxLines,
@@ -140,6 +141,8 @@ class DetectableEditableText extends EditableText {
           cursorHeight: cursorHeight,
         );
 
+  final List<TextRange>? ranges;
+
   final TextStyle detectedStyle;
 
   final RegExp detectionRegExp;
@@ -203,7 +206,15 @@ class DetectableEditableTextState extends EditableTextState {
 
   @override
   TextSpan buildTextSpan() {
-    final detections = detector.getDetections(textEditingValue.text);
+    List<Detection> detections = [];
+    // if (widget.ranges.length == 0) {
+    //   detections = detector.getDetections(textEditingValue.text);
+    // } else {
+    //   detections = List<Detection>.from(widget.ranges.map(
+    //       (range) => Detection(range: range, style: widget.detectedStyle)));
+    // }
+    detections =
+        detector.getDetections(textEditingValue.text, ranges: widget.ranges);
     final composer = Composer(
       selection: textEditingValue.selection.start,
       onDetectionTyped: widget.onDetectionTyped,
